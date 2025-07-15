@@ -1,0 +1,53 @@
+import React, { useState } from 'react';
+import './App.css';
+
+function App() {
+  const [subject, setSubject] = useState('');
+  const [body, setBody] = useState('');
+  const [urls, setUrls] = useState('');
+  const [result, setResult] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const response = await fetch('http://localhost:5000/predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subject, body, urls })
+    });
+    const data = await response.json();
+    setResult(data.result);
+  };
+
+  return (
+    <div className="App">
+      <h2>📧 Phishing Email Detector</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Email Subject"
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          required
+        />
+        <textarea
+          placeholder="Email Body"
+          value={body}
+          onChange={(e) => setBody(e.target.value)}
+          rows={6}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Email URLs (optional)"
+          value={urls}
+          onChange={(e) => setUrls(e.target.value)}
+        />
+        <button type="submit">Check Email</button>
+      </form>
+
+      {result && <h3>🔎 Result: {result}</h3>}
+    </div>
+  );
+}
+
+export default App;
